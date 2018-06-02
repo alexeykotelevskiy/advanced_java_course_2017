@@ -19,6 +19,11 @@ public class ConnectToServerAnswerStage implements Stage
     @Override
     public void process(SelectionKey key, Map<SocketChannel, Stage> connections)
     {
+
+        if (!key.isWritable() || !client.isOpen())
+        {
+            return;
+        }
         System.out.println("ConnectToServerAnswerStage");
         try
         {
