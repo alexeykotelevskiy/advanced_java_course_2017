@@ -14,7 +14,7 @@ public interface Stage
     byte ADRESS_TYPE_IPV4 = 0x01;
     byte UNSUPPORTED_METHOD = 0xF;
     byte RESERVED_BYTE = 0x00;
-    ByteBuffer buffer = ByteBuffer.allocateDirect(256);
+    ByteBuffer buffer = ByteBuffer.allocateDirect(512);
 
     void process(SelectionKey key, Map<SocketChannel, Stage> connections);
 

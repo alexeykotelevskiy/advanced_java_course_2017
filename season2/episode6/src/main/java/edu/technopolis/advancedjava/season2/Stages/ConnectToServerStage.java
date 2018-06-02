@@ -1,5 +1,6 @@
 package edu.technopolis.advancedjava.season2.Stages;
 
+import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -10,10 +11,10 @@ public class ConnectToServerStage implements Stage
     private final SocketChannel server;
     private final SocketChannel client;
 
-    ConnectToServerStage(SocketChannel server, SocketChannel key)
+    ConnectToServerStage(SocketChannel server, SocketChannel client)
     {
         this.server = server;
-        this.client = key;
+        this.client = client;
     }
 
     @Override
@@ -27,8 +28,14 @@ public class ConnectToServerStage implements Stage
         SocketChannel channel = (SocketChannel) key.channel();
         try
         {
-            connections.put(channel, new ConnectToServerAnswerStage(server, channel));
-            client.register(key.selector(), SelectionKey.OP_WRITE);
+            try {
+                server.finishConnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            channel.register(key.selector(), SelectionKey.OP_WRITE);
+            connections.put(channel, new ConnectToServerAnswerStage(server, client));
+
         }
         catch (ClosedChannelException e)
         {

@@ -36,8 +36,12 @@ public class ConnectToServerAnswerStage implements Stage
             buffer.flip();
             client.write(buffer);
             client.register(key.selector(), SelectionKey.OP_READ);
-            connections.put( client, new CommunicationStage(server, client));
-            connections.put( server, new CommunicationStage(client, server));
+            CommunicationStage clientStage = new CommunicationStage(client, server);
+            CommunicationStage serverStage = new CommunicationStage(server, client);
+            serverStage.setServerBuffer(clientStage.getBuffer());
+            clientStage.setServerBuffer(serverStage.getBuffer());
+            connections.put( server,  clientStage);
+            connections.put( client, serverStage);
         }
         catch (IOException e)
         {

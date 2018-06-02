@@ -44,20 +44,26 @@ public class NewServer
                 {
                     continue;
                 }
+                //сначала обработаем новые соединения и запись, чтобы освободить буфферы
                 keys.removeIf(key -> {
                     if (key.isAcceptable())
                     {
                         accept(connections, key);
                         return true;
                     }
-                    Stage connection = connections.get(key.channel());
-                    connection.process(key, connections);
+                    if (key.isWritable()) {
+                        process(key, connections);
+                        return true;
+                    }
+                 return false;
+                });
+                //затем все остальное
+                keys.removeIf(key -> {
+                    process(key, connections);
                     return true;
                 });
                 connections.keySet().removeIf(channel -> !channel.isOpen());
-                //System.out.println(connections.size());
             }
-
         }
         catch (IOException e)
         {
@@ -65,6 +71,11 @@ public class NewServer
         }
     }
 
+    private static void process(SelectionKey key, Map<SocketChannel, Stage> connections)
+    {
+        Stage connection = connections.get(key.channel());
+        connection.process(key, connections);
+    }
 
     private static void accept(Map<SocketChannel, Stage> connections, SelectionKey key)
     {
