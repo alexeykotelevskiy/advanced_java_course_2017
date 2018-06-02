@@ -27,7 +27,7 @@ public class ReadConnectStage implements Stage
                 channel.close();
                 return;
             }
-            if (buffer.get() != SOCKS_VER || buffer.get() != COMMAND || buffer.get() != 0x00 || buffer.get() != ADRESS_TYPE_IPV4)
+            if (buffer.get() != SOCKS_VER || buffer.get() != COMMAND || buffer.get() != RESERVED_BYTE || buffer.get() != ADRESS_TYPE_IPV4)
             {
                 channel.close();
                 return;
